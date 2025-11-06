@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>muscb32</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            text-align: left;
+            margin: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .assignment-link {
+            color: #87CEFA; /* Light blue */
+            text-decoration: none;
+        }
+        .assignment-link:hover {
+            text-decoration: underline;
+        }
+        img {
+            max-width: 40%;
+            height: auto;
+            display: block;
+            margin: 20px auto; /* Center images and add spacing */
+        }
+        audio {
+            display: block;
+            margin: 20px auto; /* Centers the audio player horizontally */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="bio.html">Bio</a></li>
+            <li><a href="muscb30.html">MUSC B30</a></li>
+            <li><a href="muscb31.html">MUSC B31</a></li>
+            <li><a href="muscb32.html">MUSC B32</a></li>
+            <li><a href="muscb33.html">MUSC B33</a></li>
+            <li><a href="muscb34.html">MUSC B34</a></li>
+            <li><a href="muscb36.html">MUSC B36</a></li>
+        </ul>
+    </nav>
+
+    <h1>Assignment 2</h1>
+
+    <p style="margin-bottom: 20px;">
+        The tutorial video on Ableton Analog with Push 2 can be found here: https://youtu.be/gCKwvl1i2t0 <br />
+    </p>
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/AoUc6NlmXO0?si=MZ3B3DlfetSXxskz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+     <audio controls>
+        <source src="alma-synth_cover.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <p style="margin-bottom: 20px;">
+        I made a small recording based on the song "Alma" by Gustavo Cerati <br />
+        It's a primarily electronic track and I wanted to try to recreate some of the main sounds using Ableton's Analog virtual synth<br />
+        I recreated the main melody, bassline, and secondary melody using a different patch for each which I'll further discuss below. <br />
+    </p>
+
+    <img src="alma_proto.png" alt="Your Image Description">
+
+    <p style="margin-bottom: 20px;">
+        From hearing the main melody, the timbre remotely sounde like a square wave one and it was kind of harmonic. <br />
+        I went with using 2 square wave oscillators to recreate the sound, pitching osc1 an octave above. I also increased the pulse width on osc1 a bit <br />
+        (just to add a bit of extra 'buzzy' texture that it seems to have on the track). <br />
+    </p>
+
+    <img src="alma_pad.png" alt="Your Image Description">
+
+    <p style="margin-bottom: 20px;">
+        For the bassline, it sounded like a static pad so I didn't feel like I would have to change much in regards to wave form. <br />
+        I only used one square wave (osc1) for this patch and increased the attack to 126ms-just because that soft rise felt obvious to me. <br />
+    </p>
+
+    <img src="alma_melody.png" alt="Your Image Description">
+
+    <p style="margin-bottom: 20px;">
+        The timbre for the secondary melody was the hardest thing for me to recreate; I know the sound is a lot more 'bleepy,'  <br />
+        but as I tweaked the filter settings on analog (applying LPF), I wasn't getting the result I was aiming for. <br />
+        I chose to use two square wave oscillators for this one because that 'bleepyness' just sounded remotely square. <br />
+        I tuned the second oscillator 2 octaves down to give it some bass, and I really shortened the attack and leveled the  <br />
+        sustain enough to strike a sweet spot with how short those notes were being played. While I lacked with this part  <br />
+        I didn't feel that my overall result was bad.  <br />
+    </p>
+
+    
+
+</body>
+</html>
