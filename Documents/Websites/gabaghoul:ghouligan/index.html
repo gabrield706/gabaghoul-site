@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gabriel Diaz - Music Producer</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: "Courier New", Courier, monospace;
+            isolation: isolate;
+        }
+
+        /* The animation stays behind the page and cannot intercept clicks. */
+        #character-background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.7; /* Increase this for a brighter background. */
+        }
+
+        nav {
+            text-align: left;
+            margin: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+         nav ul li a:focus-visible,
+        #animation-toggle:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 4px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .resized-image {
+            max-width: 50%;
+            height: auto;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        nav, main {
+            text-shadow: 0 0 6px black, 0 0 12px black;
+        }
+        #animation-toggle {
+            margin: 12px 0;
+            padding: 6px 10px;
+            border: 1px solid #56645c;
+            background: black;
+            color: #bdc9c0;
+            font: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="character-background" aria-hidden="true"></canvas>
+
+    <nav aria-label="Main navigation">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="bio.html">Bio</a></li>
+            <!-- <li><a href="muscb30.html">MUSC B30</a></li> -->
+            <!-- <li><a href="muscb31.html">MUSC B31</a></li> -->
+            <!-- <li><a href="muscb32.html">MUSC B32</a></li> -->
+            <!-- <li><a href="muscb33.html">MUSC B33</a></li> -->
+            <!-- <li><a href="muscb34.html">MUSC B34</a></li> -->
+            <!-- <li><a href="muscb36.html">MUSC B36</a></li> -->
+            <li><a href="releases.html">Releases</a></li>
+            <li><a href="extras.html">Extras</a></li>
+            <li><a href="muscb32.html">MUSC B32</a></li>
+            <li><a href="muscb33.html">MUSC B33</a></li>
+        </ul>
+    </nav>
+
+        <main>
+        <img src="ghouligan.png" alt="Your Image Description">
+
+        <p>
+            Hi, I'm Gabriel. Welcome to my website. <br>
+            I could've made this site easier for myself but I really wanted something written almost entirely in HTML. <br>
+        </p>
+        <p>
+            Check out 'Releases' to listen to my song demos or any legitimate future releases <br>
+        </p>
+    </main>
+
+    <button id="animation-toggle" type="button" hidden>Pause background</button>
+
+    <script>
+        (() => {
+            const canvas = document.getElementById('character-background');
+            const context = canvas.getContext('2d');
+            if (!context) return;
+
+            const button = document.getElementById('animation-toggle');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+            // Adjust these settings to change the atmosphere.
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789<>/\\[]{}!?@#$%&*+=:;._';
+            const color = '255, 255, 255'; // RGB: muted green. Try '145, 125, 175' for purple.
+            const fontSize = 16;
+            const cellWidth = 20;
+            const cellHeight = 26;
+            const updateInterval = 100; // Milliseconds; higher numbers change more slowly.
+            const changeChance = 0.085; // Fraction of cells that change per update.
+
+            let cells = [];
+            let width = 0;
+            let height = 0;
+            let timer = null;
+            let paused = reducedMotion.matches;
+
+            function randomCell() {
+                return {
+                    character: Math.random() < 0.25 ? ' ' :
+                        characters[Math.floor(Math.random() * characters.length)],
+                    opacity: 0.25 + Math.random() * 0.65
+                };
+            }
+
+            function draw() {
+                context.clearRect(0, 0, width, height);
+                context.font = fontSize + 'px "Courier New", monospace';
+                context.textBaseline = 'top';
+                const columns = Math.ceil(width / cellWidth);
+                cells.forEach((cell, index) => {
+                    context.fillStyle = 'rgba(' + color + ',' + cell.opacity + ')';
+                    context.fillText(cell.character,
+                        (index % columns) * cellWidth,
+                        Math.floor(index / columns) * cellHeight);
+                });
+            }
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                const scale = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                context.setTransform(scale, 0, 0, scale, 0, 0);
+                const count = Math.ceil(width / cellWidth) * Math.ceil(height / cellHeight);
+                cells = Array.from({ length: count }, randomCell);
+                draw();
+            }
+
+            function update() {
+                for (let index = 0; index < cells.length; index++) {
+                    if (Math.random() < changeChance) cells[index] = randomCell();
+                }
+                draw();
+            }
+
+            function syncAnimation() {
+                window.clearInterval(timer);
+                timer = null;
+                if (!paused && !document.hidden) {
+                    timer = window.setInterval(update, updateInterval);
+                }
+                button.textContent = paused ? 'Resume background' : 'Pause background';
+            }
+
+            button.hidden = false;
+            button.addEventListener('click', () => {
+                paused = !paused;
+                syncAnimation();
+            });
+            reducedMotion.addEventListener('change', () => {
+                paused = reducedMotion.matches;
+                syncAnimation();
+            });
+            document.addEventListener('visibilitychange', syncAnimation);
+            window.addEventListener('resize', resize);
+            resize();
+            syncAnimation();
+        })();
+    </script>
+
+    <pre>
+                                                                                                                                                                              
+                                l9¨ …h     •YÚëŠâGbn·                                               
+                               §‹    iû™l¯          ¦Ÿ                                              
+                              í•     O­         ›¬ˆ  …Ï                                             
+                              Í’    °j  ç% ©¦  §   ð  a                                             
+                              9     ¬> %¬   € ;4   ý  Y                                             
+                             *u     /[  º™f÷    !ù—   0                                             
+                             ‡i      ™                ô                                             
+                             ®ˆ       µì             Z©›                                            
+                             ä          0+               !ùùj                                       
+                             ¤ì                              ˆP                                     
+                             ˆx                                ç(                                   
+                              ù˜                                ©›                                  
+                              ´P                                ¸ž                                  
+                                ’2£                              ­ž                                 
+                                  ‹@                              r«                                
+                                   Ï¬                              ž                                
+                                    ®…                             ìÏ                               
+                                    ­r                              n«                              
+                                     Í                               ¾                              
+                                     O                               ‘§                             
+                                     µ                                ð                             
+                                     y                             •ác                              
+                                     9                         Uå[ˆ                                 
+                                     9                      ‰»                                      
+                                     6                      ¢                                       
+                                     6                      l~                                      
+                                     ù                    ‡o„                                       
+                                     <‡                   ½ˆ                                        
+                                     `8                   ‰¨                                        
+                                      X                   ƒ‚                                        
+                                      K                   !¢                                        
+                                      Ä                   ¸à                                        
+                                      §ˆ                   q                                        
+                                      ´Í                   R                                        
+                                         ›Ä                Û˜                                       
+                                          E                3ó [zi                                   
+                                       ¼&óP´                     ›e›                                
+                                     nz                            f“                               
+                                     £                              Ù                               
+                                    ›1                            /3Ì                               
+                                     4                   ~l£Pøb§[                                   
+                                      ›¿l1%rí7(º‘:°~³:¨                                             
+                                                                                                                                  
+                                                                                                                                                                                             
+</pre>
+
+    <!-- <p style="margin-bottom: 20px;">
+        That's my logo at the bottom-it's inspired by one of the Nazca lines. I'm super proud of how it turned out. <br />
+        Anyways, enjoy! <br />
+    </p>
+
+    <img src="IMG_1439.jpg" alt="official logo" class="resized-image">
+    -->
+  
+</body>
+</html>
+
