@@ -20,11 +20,11 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
-            opacity: 0.7; /* Increase this for a brighter background. */
+            opacity: 0.9; /* Increase this for a brighter background. */
         }
 
         nav {
-            text-align: left;
+            text-align: center;
             margin: 10px 0;
         }
         nav ul {
@@ -75,6 +75,9 @@
             font-size: 12px;
             cursor: pointer;
         }
+        pre {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -92,8 +95,9 @@
             <!-- <li><a href="muscb36.html">MUSC B36</a></li> -->
             <li><a href="releases.html">Releases</a></li>
             <li><a href="extras.html">Extras</a></li>
-            <li><a href="muscb32.html">MUSC B32</a></li>
-            <li><a href="muscb33.html">MUSC B33</a></li>
+            <li><a href="musicb30.html">Contact</a></li>
+            <!--<li><a href="muscb32.html">MUSC B32</a></li>
+            <li><a href="muscb33.html">MUSC B33</a></li> -->
         </ul>
     </nav>
 
@@ -101,24 +105,56 @@
         <img src="ghouligan.png" alt="Your Image Description">
 
         <p>
-            Hi, I'm Gabriel. Welcome to my website. <br>
-            I could've made this site easier for myself but I really wanted something written almost entirely in HTML. <br>
+            Hi, I'm Gabriel. This is ghouligan. Welcome to my crib. <br>
+            I really wanted this website to be written entirely in HTML. <br>
+            Kinda like Craigslist, except that's not entirely HTML. <br>
         </p>
         <p>
-            Check out 'Releases' to listen to my song demos or any legitimate future releases <br>
+            Check out 'Releases' to listen to my music. <br>
         </p>
     </main>
 
     <button id="animation-toggle" type="button" hidden>Pause background</button>
 
     <script>
-        (() => {
+        document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.getElementById('character-background');
             const context = canvas.getContext('2d');
             if (!context) return;
 
             const button = document.getElementById('animation-toggle');
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            const sourceArt = document.querySelector('pre').textContent
+                .split('\n')
+                .map(line => Array.from(line.trimEnd()));
+
+            while (sourceArt.length && sourceArt[0].every(character => /\s/.test(character))) {
+                sourceArt.shift();
+            }
+            while (sourceArt.length && sourceArt[sourceArt.length - 1].every(character => /\s/.test(character))) {
+                sourceArt.pop();
+            }
+
+            const occupied = [];
+            sourceArt.forEach((line, row) => {
+                line.forEach((character, column) => {
+                    if (!/\s/.test(character)) occupied.push({ row, column });
+                });
+            });
+            const minArtRow = Math.min(...occupied.map(point => point.row));
+            const maxArtRow = Math.max(...occupied.map(point => point.row));
+            const minArtColumn = Math.min(...occupied.map(point => point.column));
+            const maxArtColumn = Math.max(...occupied.map(point => point.column));
+            const artMask = sourceArt.slice(minArtRow, maxArtRow + 1).map(line =>
+                Array.from({ length: maxArtColumn - minArtColumn + 1 }, (_, column) =>
+                    /\S/.test(line[minArtColumn + column] || '')));
+            const artInterior = artMask.map(row => {
+                const firstOutline = row.indexOf(true);
+                const lastOutline = row.lastIndexOf(true);
+                return row.map((isOutline, columnIndex) =>
+                    !isOutline && firstOutline >= 0 && columnIndex > firstOutline &&
+                    columnIndex < lastOutline);
+            });
 
             // Adjust these settings to change the atmosphere.
             const characters = 'abcdefghijklmnopqrstuvwxyz0123456789<>/\\[]{}!?@#$%&*+=:;._';
@@ -130,6 +166,11 @@
             const changeChance = 0.085; // Fraction of cells that change per update.
 
             let cells = [];
+            let artCells = [];
+            let artLeft = 0;
+            let artTop = 0;
+            let artCellWidth = cellWidth;
+            let artCellHeight = cellHeight;
             let width = 0;
             let height = 0;
             let timer = null;
@@ -139,7 +180,15 @@
                 return {
                     character: Math.random() < 0.25 ? ' ' :
                         characters[Math.floor(Math.random() * characters.length)],
-                    opacity: 0.25 + Math.random() * 0.65
+                    opacity: 0.58 + Math.random() * 0.12
+                };
+            }
+
+            function randomArtCell() {
+                return {
+                    character: Math.random() < 0.25 ? ' ' :
+                        characters[Math.floor(Math.random() * characters.length)],
+                    opacity: 0.72 + Math.random() * 0.28
                 };
             }
 
@@ -148,11 +197,35 @@
                 context.font = fontSize + 'px "Courier New", monospace';
                 context.textBaseline = 'top';
                 const columns = Math.ceil(width / cellWidth);
+                function overlapsProtectedArt(x, y) {
+                    const firstColumn = Math.max(0, Math.floor((x - artLeft) / artCellWidth));
+                    const lastColumn = Math.min(artMask[0].length - 1,
+                        Math.floor((x + fontSize - artLeft) / artCellWidth));
+                    const firstRow = Math.max(0, Math.floor((y - artTop) / artCellHeight));
+                    const lastRow = Math.min(artMask.length - 1,
+                        Math.floor((y + fontSize - artTop) / artCellHeight));
+                    for (let row = firstRow; row <= lastRow; row++) {
+                        for (let column = firstColumn; column <= lastColumn; column++) {
+                            if (artMask[row][column] || artInterior[row][column]) return true;
+                        }
+                    }
+                    return false;
+                }
                 cells.forEach((cell, index) => {
+                    const x = (index % columns) * cellWidth;
+                    const y = Math.floor(index / columns) * cellHeight;
+                    if (overlapsProtectedArt(x, y)) return;
                     context.fillStyle = 'rgba(' + color + ',' + cell.opacity + ')';
-                    context.fillText(cell.character,
-                        (index % columns) * cellWidth,
-                        Math.floor(index / columns) * cellHeight);
+                    context.fillText(cell.character, x, y);
+                });
+                artCells.forEach((row, rowIndex) => {
+                    row.forEach((cell, columnIndex) => {
+                        if (!cell) return;
+                        context.fillStyle = 'rgba(' + color + ',' + cell.opacity + ')';
+                        context.fillText(cell.character,
+                            artLeft + columnIndex * artCellWidth,
+                            artTop + rowIndex * artCellHeight);
+                    });
                 });
             }
 
@@ -165,6 +238,14 @@
                 context.setTransform(scale, 0, 0, scale, 0, 0);
                 const count = Math.ceil(width / cellWidth) * Math.ceil(height / cellHeight);
                 cells = Array.from({ length: count }, randomCell);
+                const artScale = 0.8 * Math.min(1,
+                    (width * 0.82) / (artMask[0].length * cellWidth),
+                    (height * 0.82) / (artMask.length * cellHeight));
+                artCellWidth = cellWidth * artScale;
+                artCellHeight = cellHeight * artScale;
+                artLeft = (width - artMask[0].length * artCellWidth) / 2;
+                artTop = (height - artMask.length * artCellHeight) / 2 + height * 0.04;
+                artCells = artMask.map(row => row.map(isOutline => isOutline ? randomArtCell() : null));
                 draw();
             }
 
@@ -172,6 +253,9 @@
                 for (let index = 0; index < cells.length; index++) {
                     if (Math.random() < changeChance) cells[index] = randomCell();
                 }
+                artCells.forEach(row => row.forEach((cell, index) => {
+                    if (cell && Math.random() < changeChance) row[index] = randomArtCell();
+                }));
                 draw();
             }
 
@@ -197,7 +281,7 @@
             window.addEventListener('resize', resize);
             resize();
             syncAnimation();
-        })();
+        });
     </script>
 
     <pre>
