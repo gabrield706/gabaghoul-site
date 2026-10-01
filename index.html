@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gabriel Diaz - Music Producer</title>
     <style>
         body {
             background-color: black;
             color: white;
             font-family: "Courier New", Courier, monospace;
+            isolation: isolate;
         }
+
+        /* The animation stays behind the page and cannot intercept clicks. */
+        #character-background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.7; /* Increase this for a brighter background. */
+        }
+
         nav {
             text-align: left;
             margin: 10px 0;
@@ -29,14 +44,43 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
+
+         nav ul li a:focus-visible,
+        #animation-toggle:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 4px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
         .resized-image {
             max-width: 50%;
             height: auto;
         }
+        p {
+            margin-bottom: 20px;
+        }
+        nav, main {
+            text-shadow: 0 0 6px black, 0 0 12px black;
+        }
+        #animation-toggle {
+            margin: 12px 0;
+            padding: 6px 10px;
+            border: 1px solid #56645c;
+            background: black;
+            color: #bdc9c0;
+            font: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <nav>
+    <canvas id="character-background" aria-hidden="true"></canvas>
+
+    <nav aria-label="Main navigation">
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="bio.html">Bio</a></li>
@@ -53,20 +97,108 @@
         </ul>
     </nav>
 
-    <img src="ghouligan.png" alt="Your Image Description">
+        <main>
+        <img src="ghouligan.png" alt="Your Image Description">
 
+        <p>
+            Hi, I'm Gabriel. Welcome to my website. <br>
+            I could've made this site easier for myself but I really wanted something written almost entirely in HTML. <br>
+        </p>
+        <p>
+            Check out 'Releases' to listen to my song demos or any legitimate future releases <br>
+        </p>
+    </main>
 
-    <p style="margin-bottom: 20px;">
-        Hey, I'm Gabriel, welcome to my website. <br />
-        I could've made this site easier for myself but I really wanted something written almost entirely in HTML. <br />
-        Why pay for Squarespace when you can semi-do this yourself? <br />
-    </p>
+    <button id="animation-toggle" type="button" hidden>Pause background</button>
 
-    <p style="margin-bottom: 20px;">
-        Check out 'Releases' to listen to my song demos or any legitimate future releases <br />
-        Check out the 'Extras' tab if you like to live vicariously. <br />
-        The other tabs are for a sound design and live sound classes I'm taking. <br />
-    </p>
+    <script>
+        (() => {
+            const canvas = document.getElementById('character-background');
+            const context = canvas.getContext('2d');
+            if (!context) return;
+
+            const button = document.getElementById('animation-toggle');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+            // Adjust these settings to change the atmosphere.
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789<>/\\[]{}!?@#$%&*+=:;._';
+            const color = '255, 255, 255'; // RGB: muted green. Try '145, 125, 175' for purple.
+            const fontSize = 16;
+            const cellWidth = 20;
+            const cellHeight = 26;
+            const updateInterval = 100; // Milliseconds; higher numbers change more slowly.
+            const changeChance = 0.085; // Fraction of cells that change per update.
+
+            let cells = [];
+            let width = 0;
+            let height = 0;
+            let timer = null;
+            let paused = reducedMotion.matches;
+
+            function randomCell() {
+                return {
+                    character: Math.random() < 0.25 ? ' ' :
+                        characters[Math.floor(Math.random() * characters.length)],
+                    opacity: 0.25 + Math.random() * 0.65
+                };
+            }
+
+            function draw() {
+                context.clearRect(0, 0, width, height);
+                context.font = fontSize + 'px "Courier New", monospace';
+                context.textBaseline = 'top';
+                const columns = Math.ceil(width / cellWidth);
+                cells.forEach((cell, index) => {
+                    context.fillStyle = 'rgba(' + color + ',' + cell.opacity + ')';
+                    context.fillText(cell.character,
+                        (index % columns) * cellWidth,
+                        Math.floor(index / columns) * cellHeight);
+                });
+            }
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                const scale = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                context.setTransform(scale, 0, 0, scale, 0, 0);
+                const count = Math.ceil(width / cellWidth) * Math.ceil(height / cellHeight);
+                cells = Array.from({ length: count }, randomCell);
+                draw();
+            }
+
+            function update() {
+                for (let index = 0; index < cells.length; index++) {
+                    if (Math.random() < changeChance) cells[index] = randomCell();
+                }
+                draw();
+            }
+
+            function syncAnimation() {
+                window.clearInterval(timer);
+                timer = null;
+                if (!paused && !document.hidden) {
+                    timer = window.setInterval(update, updateInterval);
+                }
+                button.textContent = paused ? 'Resume background' : 'Pause background';
+            }
+
+            button.hidden = false;
+            button.addEventListener('click', () => {
+                paused = !paused;
+                syncAnimation();
+            });
+            reducedMotion.addEventListener('change', () => {
+                paused = reducedMotion.matches;
+                syncAnimation();
+            });
+            document.addEventListener('visibilitychange', syncAnimation);
+            window.addEventListener('resize', resize);
+            resize();
+            syncAnimation();
+        })();
+    </script>
 
     <pre>
                                                                                                                                                                               
@@ -126,4 +258,3 @@
   
 </body>
 </html>
-
