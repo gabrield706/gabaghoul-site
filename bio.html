@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bio - Gabriel Diaz</title>
     <style>
         body {
             background-color: black;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: "Courier New", Courier, monospace;
         }
         nav {
-            text-align: left;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
             margin: 10px 0;
+            gap: 16px;
+        }
+        .site-logo {
+            display: block;
+            grid-column: 1;
+            justify-self: start;
+            width: min(280px, 100%);
+            max-width: 280px;
+            height: auto;
         }
         nav ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
+            grid-column: 2;
+            text-align: center;
         }
         nav ul li {
             display: inline;
@@ -29,31 +44,77 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
+        nav ul li a:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 4px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        @media (max-width: 1100px) {
+            nav {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .site-logo {
+                width: min(180px, 45vw);
+            }
+            nav ul {
+                grid-column: 1;
+                width: 100%;
+            }
+        }
+        nav, main {
+            text-shadow: 0 0 6px black, 0 0 12px black;
+        }
     </style>
 </head>
 <body>
-    <nav>
+    <nav aria-label="Main navigation">
+        <img class="site-logo" src="ghouligan.png" alt="Ghouligan logo">
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="bio.html">Bio</a></li>
-            <li><a href="muscb30.html">MUSC B30</a></li>
-            <li><a href="muscb31.html">MUSC B31</a></li>
-            <li><a href="muscb32.html">MUSC B32</a></li>
-            <li><a href="muscb33.html">MUSC B33</a></li>
-            <li><a href="muscb34.html">MUSC B34</a></li>
-            <li><a href="muscb36.html">MUSC B36</a></li>
+            <li><a href="releases.html">Releases</a></li>
+            <li><a href="extras.html">Extras</a></li>
+            <li><a href="musicb30.html">Contact</a></li>
         </ul>
     </nav>
 
-    <h1>Bio</h1>
     <p>
-        Hi, I’m Gabriel Diaz, also known as ghouligan. I'm a former software developer trying his hand at a long-time passion. My musical influences draw from many genres, including post-punk, Latin, trip hop, shoegaze, metal, psychedelic rock, and ambient. 
+        <br>
+        <br>
+        Hi, I'm Gabriel. I love music, computers, and using AI transparently. <br>
+        I write and record my own original music. I play guitar, bass, I sing, and sequence drums on my own computer. <br> 
+        <br>
+        <br>
+        <br>
     </p>
+
+
     <p>
-        I've been playing guitar since I was 9 and have played in bands throughout high school. I studied computer engineering right after but had no time for music. We can't have that now can we?
+        ghouligan is my solo project. <br>
+        It's influenced by a lot of genres, primarily post-punk, thrash metal, grunge, IDM, and Latin music. <br>
+        Kinda like the smashing pumpkins if their hips didn't lie. <br>
+        <br>
+        <br>
+        <br>
     </p>
+
     <p>
-        Thanks for visiting my site! Feel free to explore the other sections to learn more about my music and projects.
+        I'm also a former software developer who likes fudging around with computers. <br>
+        Something cool I did was work on a spatial audio research project back in college. <br>
+        I also play guitar in a Spanish rock band called Senova (yep, that's my forehead right there). <br> 
+        That's about as linkedin as I'm getting on this bio page. <br> 
+        <br>
+        <br>
+        <br>
+    </p>
+
+    <p>
+        Anyway, let's let the music speak for itself. <br>
+        I primarily write songs and release them into the world. It's how I get my fulfillment. <br>
+        If you want to get a hold of me for an event or potential collaboration, the 'Contact' link's up there. <br> 
     </p>
 </body>
 </html>

@@ -24,13 +24,26 @@
         }
 
         nav {
-            text-align: center;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
             margin: 10px 0;
+            gap: 16px;
+        }
+        .site-logo {
+            display: block;
+            grid-column: 1;
+            justify-self: start;
+            width: min(280px, 100%);
+            max-width: 280px;
+            height: auto;
         }
         nav ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
+            grid-column: 2;
+            text-align: center;
         }
         nav ul li {
             display: inline;
@@ -53,6 +66,19 @@
         img {
             max-width: 100%;
             height: auto;
+        }
+
+        @media (max-width: 1100px) {
+            nav {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .site-logo {
+                width: min(180px, 45vw);
+            }
+            nav ul {
+                grid-column: 1;
+                width: 100%;
+            }
         }
 
         .resized-image {
@@ -84,6 +110,7 @@
     <canvas id="character-background" aria-hidden="true"></canvas>
 
     <nav aria-label="Main navigation">
+        <img class="site-logo" src="ghouligan.png" alt="Ghouligan logo">
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="bio.html">Bio</a></li>
@@ -94,7 +121,7 @@
             <!-- <li><a href="muscb34.html">MUSC B34</a></li> -->
             <!-- <li><a href="muscb36.html">MUSC B36</a></li> -->
             <li><a href="releases.html">Releases</a></li>
-            <li><a href="extras.html">Extras</a></li>
+            <li><a href="https://youtu.be/dQw4w9WgXcQ?si=5_6v72HnINeET8Ed">Extras</a></li>
             <li><a href="musicb30.html">Contact</a></li>
             <!--<li><a href="muscb32.html">MUSC B32</a></li>
             <li><a href="muscb33.html">MUSC B33</a></li> -->
@@ -102,15 +129,13 @@
     </nav>
 
         <main>
-        <img src="ghouligan.png" alt="Your Image Description">
-
         <p>
-            Hi, I'm Gabriel. This is ghouligan. Welcome to my crib. <br>
+            This is ghouligan. Welcome to my crib. <br>
             I really wanted this website to be written entirely in HTML. <br>
             Kinda like Craigslist, except that's not entirely HTML. <br>
         </p>
         <p>
-            Check out 'Releases' to listen to my music. <br>
+            Live vicariously and check out my tabs. <br>
         </p>
     </main>
 
