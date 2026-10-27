@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ghouligan - extras</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: "Courier New", Courier, monospace;
+            isolation: isolate;
+        }
+
+        /* The animation stays behind the page and cannot intercept clicks. */
+        #character-background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.9; /* Increase this for a brighter background. */
+        }
+
+        nav {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            margin: 10px 0;
+            gap: 16px;
+        }
+        .site-logo {
+            display: block;
+            grid-column: 1;
+            justify-self: start;
+            width: min(280px, 100%);
+            max-width: 280px;
+            height: auto;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            grid-column: 2;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+         nav ul li a:focus-visible,
+        #animation-toggle:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 4px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 1100px) {
+            nav {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .site-logo {
+                width: min(180px, 45vw);
+            }
+            nav ul {
+                grid-column: 1;
+                width: 100%;
+            }
+        }
+
+        .resized-image {
+            max-width: 50%;
+            height: auto;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        nav, main {
+            text-shadow: 0 0 6px black, 0 0 12px black;
+        }
+        #animation-toggle {
+            margin: 12px 0;
+            padding: 6px 10px;
+            border: 1px solid #56645c;
+            background: black;
+            color: #bdc9c0;
+            font: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="character-background" aria-hidden="true"></canvas>
+
+    <nav aria-label="Main navigation">
+        <img class="site-logo" src="ghouligan.png" alt="Ghouligan logo">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="bio.html">Bio</a></li>
+            <!-- <li><a href="muscb30.html">MUSC B30</a></li> -->
+            <!-- <li><a href="muscb31.html">MUSC B31</a></li> -->
+            <!-- <li><a href="muscb32.html">MUSC B32</a></li> -->
+            <!-- <li><a href="muscb33.html">MUSC B33</a></li> -->
+            <!-- <li><a href="muscb34.html">MUSC B34</a></li> -->
+            <!-- <li><a href="muscb36.html">MUSC B36</a></li> -->
+            <li><a href="releases.html">Releases</a></li>
+            <li><a href="https://youtu.be/dQw4w9WgXcQ?si=5_6v72HnINeET8Ed">Extras</a></li>
+            <li><a href="musicb30.html">Contact</a></li>
+            <!--<li><a href="muscb32.html">MUSC B32</a></li>
+            <li><a href="muscb33.html">MUSC B33</a></li> -->
+        </ul>
+    </nav>
+
+        <main>
+        <p>
+            EXTRAS. <br>
+        </p>
+        <p>
+            Do you guys ever wonder if a lot of us are really just chasing things that are already there? <br>
+        </p>
+    </main>
+
+    <button id="animation-toggle" type="button" hidden>Pause background</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('character-background');
+            const context = canvas.getContext('2d');
+            if (!context) return;
+
+            const button = document.getElementById('animation-toggle');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            // Adjust these settings to change the atmosphere.
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789<>/\\[]{}!?@#$%&*+=:;._';
+            const color = '255, 255, 255';
+            const fontSize = 16;
+            const cellWidth = 20;
+            const cellHeight = 26;
+            const updateInterval = 100; // Milliseconds; higher numbers change more slowly.
+            const changeChance = 0.085; // Fraction of cells that change per update.
+
+            let cells = [];
+            let width = 0;
+            let height = 0;
+            let timer = null;
+            let paused = reducedMotion.matches;
+
+            function randomCell() {
+                return {
+                    character: Math.random() < 0.25 ? ' ' :
+                        characters[Math.floor(Math.random() * characters.length)],
+                    opacity: 0.58 + Math.random() * 0.12
+                };
+            }
+
+            function draw() {
+                context.clearRect(0, 0, width, height);
+                context.font = fontSize + 'px "Courier New", monospace';
+                context.textBaseline = 'top';
+                const columns = Math.ceil(width / cellWidth);
+                cells.forEach((cell, index) => {
+                    const x = (index % columns) * cellWidth;
+                    const y = Math.floor(index / columns) * cellHeight;
+                    context.fillStyle = 'rgba(' + color + ',' + cell.opacity + ')';
+                    context.fillText(cell.character, x, y);
+                });
+            }
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                const scale = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                context.setTransform(scale, 0, 0, scale, 0, 0);
+                const count = Math.ceil(width / cellWidth) * Math.ceil(height / cellHeight);
+                cells = Array.from({ length: count }, randomCell);
+                draw();
+            }
+
+            function update() {
+                for (let index = 0; index < cells.length; index++) {
+                    if (Math.random() < changeChance) cells[index] = randomCell();
+                }
+                draw();
+            }
+
+            function syncAnimation() {
+                window.clearInterval(timer);
+                timer = null;
+                if (!paused && !document.hidden) {
+                    timer = window.setInterval(update, updateInterval);
+                }
+                button.textContent = paused ? 'Resume background' : 'Pause background';
+            }
+
+            button.hidden = false;
+            button.addEventListener('click', () => {
+                paused = !paused;
+                syncAnimation();
+            });
+            reducedMotion.addEventListener('change', () => {
+                paused = reducedMotion.matches;
+                syncAnimation();
+            });
+            document.addEventListener('visibilitychange', syncAnimation);
+            window.addEventListener('resize', resize);
+            resize();
+            syncAnimation();
+        });
+     </script>
+  
+</body>
+</html>
